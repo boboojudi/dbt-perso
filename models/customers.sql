@@ -37,7 +37,6 @@ customer_orders as (
 ),
 
 final as (
-
     select
         customers.customer_id,
         customers.first_name,
