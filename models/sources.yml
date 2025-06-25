@@ -2,23 +2,25 @@ version: 2
 
 sources:
   - name: jaffle_shop
-    description: This is a replica of the Postgres database used by our app
+    description: A clone of a Postgres application database.
     database: raw
     schema: jaffle_shop
     tables:
       - name: customers
         identifier: customers
-        description: One record per customer.
+        description: Raw customers data. One record per customer.
         columns:
           - name: id
+            description: Primary key for customers.
             tests:
               - unique
               - not_null
       - name: orders
         identifier: orders
-        description: One record per order. Includes cancelled and deleted orders.
+        description: Raw orders data. One record per order. Includes cancelled and deleted orders.
         columns:
           - name: id
+            description: Primary key for orders.
             tests:
               - unique              
               - not_null
