@@ -1,3 +1,9 @@
+{{
+    config(
+        materialized='incremental'
+    )
+}}
+
 with orders as  (
     select * from {{ ref ('stg_orders' )}}
 ),
@@ -28,3 +34,7 @@ order_payments as (
 )
 
 select * from final
+
+{% if is_incremental() -%}
+    where order_date >= (select max(order_date) from {{this}} )
+{% endif %}
