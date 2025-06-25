@@ -1,6 +1,9 @@
 {{
     config(
-        materialized='incremental'
+        materialized = 'incremental',
+        unique_key = 'order_id',
+        incremental_strategy = 'merge',
+        on_schema_change = 'append_new_columns'
     )
 }}
 
