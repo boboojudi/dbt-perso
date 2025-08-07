@@ -29,7 +29,7 @@ order_payments as (
     select
         orders.order_id::TEXT AS order_id,
         orders.customer_id::TEXT AS customer_id,
-        orders.order_date AS ordered_at,
+        orders.order_date,
         orders.order_status,
         coalesce (order_payments.order_total, 0) as order_amount
 
@@ -40,5 +40,5 @@ order_payments as (
 select * from final
 
 {% if is_incremental() -%}
-    where ordered_at >= (select max(ordered_at) from {{this}} )
+    where order_date >= (select max(order_date) from final ) --{{this}}
 {% endif %}
