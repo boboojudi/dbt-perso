@@ -1,0 +1,78 @@
+version: 2
+
+models:
+  - name: fct_orders
+    description: Complete orders model including the amount associated with each order.
+    latest_version: 1 ##Call out which version will be the default version when running this model
+    config:
+      contract:
+        enforced: true
+      group: finance
+      access: public
+    # tests:
+    #   - dbt_utils.expression_is_true:
+    #       expression: "amount >= 0"
+    columns:
+      - name: order_id
+        data_type: text
+        description: Primary key for orders
+        tests:
+          - unique
+          - not_null
+
+      - name: customer_id
+        data_type: text
+        # tests:
+        #   - relationships:
+        #       to: ref('stg_customers')
+        #       field: customer_id
+        #   # this test should fail, use `dbt test -s orders --store-failures` to find results
+        #   - unique
+
+      - name: order_status
+        data_type: text
+
+      - name: order_total
+        data_type: number
+        description: Dollars spent per order
+        tests: 
+          - dbt_expectations.expect_column_values_to_be_between: 
+          # this will perform what the dbt_utils.expression-is-true test does!
+              min_value: 0
+              row_condition: "order_id is not null" 
+              strictly: false
+          - dbt_expectations.expect_column_mean_to_be_between: 
+          # this will perform what our singular and generic tests do!
+              min_value: 1
+              group_by: [customer_id] 
+              row_condition: "order_id is not null" # (Optional)
+              strictly: false
+
+      - name: order_date
+        data_type: date
+
+    versions: ### Add versioning section defining each version and listing changes to contract
+      - v: 1
+        ## Matches above! Nothing more needed
+        config:
+          alias: fct_orders
+      - v: 2
+        columns:
+          - name: amount ## v2 Adds in new column name and date type change
+            data_type: number
+            description: Dollars spent per order
+            tests: 
+              - dbt_expectations.expect_column_values_to_be_between: 
+              # this will perform what the dbt_utils.expression-is-true test does!
+                  min_value: 0
+                  row_condition: "order_id is not null" 
+                  strictly: false
+              - dbt_expectations.expect_column_mean_to_be_between: 
+              # this will perform what our singular and generic tests do!
+                  min_value: 1
+                  group_by: [customer_id] 
+                  row_condition: "order_id is not null" # (Optional)
+                  strictly: false
+                  
+          - include: all #Includes all other fields
+            exclude: [order_total] #But removes the old name of order_total

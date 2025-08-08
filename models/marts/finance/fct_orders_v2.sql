@@ -31,7 +31,7 @@ order_payments as (
         orders.customer_id::TEXT AS customer_id,
         orders.order_date,
         orders.order_status,
-        coalesce (order_payments.order_total, 0) as order_amount
+        coalesce (order_payments.order_total, 0) as amount
 
     from orders
     left join order_payments using (order_id)

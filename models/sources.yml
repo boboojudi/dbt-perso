@@ -11,7 +11,7 @@ sources:
         description: Raw customers data. One record per customer.
         columns:
           - name: id
-            description: Primary key for customers.
+            description: Primary key for raw customers.
             tests:
               - unique
               - not_null
@@ -20,7 +20,7 @@ sources:
         description: Raw orders data. One record per order. Includes cancelled and deleted orders.
         columns:
           - name: id
-            description: Primary key for orders.
+            description: Primary key for raw orders.
             tests:
               - unique              
               - not_null
@@ -37,6 +37,12 @@ sources:
       - name: payment
         identifier: payment
         description: One record per payment.
+        columns:
+          - name: id
+            description: Primary key for raw payments.
+            tests:
+              - unique              
+              - not_null
         loaded_at_field: _batched_at
         freshness:
           warn_after: {count: 12, period: hour}
