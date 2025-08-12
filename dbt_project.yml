@@ -43,3 +43,4 @@ models:
     staging:
       +enabled: true
       +materialized: view
+    # +store_failures: true

@@ -3,13 +3,13 @@ version: 2
 models:
   - name: fct_orders
     description: Complete orders model including the amount associated with each order.
-    latest_version: 1 ##Call out which version will be the default version when running this model
+    latest_version: 2  ## Call out which version will be the default version when running this model
     config:
       contract:
         enforced: true
       group: finance
       access: public
-    # tests:
+    # tests:  ## fails because v1 contains a different column name
     #   - dbt_utils.expression_is_true:
     #       expression: "amount >= 0"
     columns:
@@ -28,6 +28,9 @@ models:
         #       field: customer_id
         #   # this test should fail, use `dbt test -s orders --store-failures` to find results
         #   - unique
+
+      - name: order_date
+        data_type: date
 
       - name: order_status
         data_type: text
@@ -48,16 +51,15 @@ models:
               row_condition: "order_id is not null" # (Optional)
               strictly: false
 
-      - name: order_date
-        data_type: date
-
     versions: ### Add versioning section defining each version and listing changes to contract
       - v: 1
         ## Matches above! Nothing more needed
         config:
-          alias: fct_orders
+          alias: fct_orders_v1
       - v: 2
         columns:
+          - include: all #Includes all other fields
+            exclude: [order_total] #But removes the old name of order_total
           - name: amount ## v2 Adds in new column name and date type change
             data_type: number
             description: Dollars spent per order
@@ -73,6 +75,3 @@ models:
                   group_by: [customer_id] 
                   row_condition: "order_id is not null" # (Optional)
                   strictly: false
-                  
-          - include: all #Includes all other fields
-            exclude: [order_total] #But removes the old name of order_total
