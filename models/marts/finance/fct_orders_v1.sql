@@ -6,7 +6,7 @@
         on_schema_change = 'append_new_columns'
     )
 }}
-
+-- old version
 with orders as  (
     select * from {{ ref ('stg_orders' )}}
 ),
@@ -28,10 +28,14 @@ order_payments as (
 
     select
         orders.order_id::TEXT AS order_id,
-        orders.customer_id::TEXT AS customer_id,
+        (case
+            when orders.customer_id = 1
+            then orders.customer_id +1000
+            else orders.customer_id 
+        end)::TEXT AS customer_id,
         orders.order_date,
         orders.order_status,
-        coalesce (order_payments.order_total, 0) as amount
+        coalesce (order_payments.order_total, 0) as order_total
 
     from orders
     left join order_payments using (order_id)
@@ -40,5 +44,5 @@ order_payments as (
 select * from final
 
 {% if is_incremental() -%}
-    where order_date >= (select max(order_date) from final ) --{{this}}
+    where order_date >= (select max(order_date) from final )
 {% endif %}
