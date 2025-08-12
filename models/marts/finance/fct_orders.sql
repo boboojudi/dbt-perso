@@ -14,7 +14,7 @@ with orders as  (
 payments as (
     select * from {{ ref ('stg_payments') }}
 ),
-
+-- comment N2 for testing CI
 order_payments as (
     select
         order_id,
